@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/search")
@@ -19,6 +20,13 @@ public class SkuController {
     private SkuService skuService;
 
 
+    /**
+     * 搜索
+     */
+    @PostMapping
+    public Map search(@RequestBody(required = false)Map searchMap) {
+        return skuService.search(searchMap);
+    }
 
     /**
      * 导入数据

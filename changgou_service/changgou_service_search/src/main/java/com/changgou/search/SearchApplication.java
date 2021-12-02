@@ -1,6 +1,7 @@
 package com.changgou.search;
 
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import tk.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @MapperScan("com.changgou.search.dao")
 @ComponentScan(basePackages = {"com.changgou"})
 @EnableFeignClients(basePackages = {"com.changgou.goods.feign"})
+@EnableElasticsearchRepositories({"com.changgou.search.dao"})
 public class SearchApplication {
 
     public static void main(String[] args) {
