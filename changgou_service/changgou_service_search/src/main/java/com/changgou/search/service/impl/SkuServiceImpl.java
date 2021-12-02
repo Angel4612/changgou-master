@@ -75,7 +75,7 @@ public class SkuServiceImpl implements SkuService {
 
         // 设置主关键字查询条件
         nativeSearchQueryBuilder.withQuery(QueryBuilders.matchQuery("name", keywords));
-        nativeSearchQueryBuilder.withPageable(PageRequest.of(1, 10));
+
 
         // 条件筛选
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -116,6 +116,18 @@ public class SkuServiceImpl implements SkuService {
         // 构建查询过滤器
         nativeSearchQueryBuilder.withFilter(boolQueryBuilder);
 
+        // 分页 (注意, 分页的第一页为0)
+        Integer pageNum = 1; // 默认为第一页
+        if (!StringUtils.isEmpty(searchMap.get("pageNum"))) {
+            try {
+                pageNum = Integer.valueOf(searchMap.get("pageNum"));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                pageNum = 1;
+            }
+        }
+        Integer pageSize = 5; // 每页显示条目数量, 固定
+        nativeSearchQueryBuilder.withPageable(PageRequest.of(pageNum - 1, pageSize));
 
         // 构建查询对象
         NativeSearchQuery query = nativeSearchQueryBuilder.build();
