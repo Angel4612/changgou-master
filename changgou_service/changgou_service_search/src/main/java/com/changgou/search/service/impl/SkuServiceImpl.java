@@ -12,6 +12,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -128,6 +130,15 @@ public class SkuServiceImpl implements SkuService {
         }
         Integer pageSize = 5; // 每页显示条目数量, 固定
         nativeSearchQueryBuilder.withPageable(PageRequest.of(pageNum - 1, pageSize));
+
+
+        // 排序
+        //构建排序查询
+        String sortRule = searchMap.get("sortRule");
+        String sortField = searchMap.get("sortField");
+        if (!StringUtils.isEmpty(sortRule) && !StringUtils.isEmpty(sortField)) {
+            nativeSearchQueryBuilder.withSort(SortBuilders.fieldSort(sortField).order(sortRule.equals("DESC") ? SortOrder.DESC : SortOrder.ASC));
+        }
 
         // 构建查询对象
         NativeSearchQuery query = nativeSearchQueryBuilder.build();
