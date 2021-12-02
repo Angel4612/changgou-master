@@ -7,6 +7,7 @@ import com.changgou.goods.pojo.Sku;
 import com.changgou.search.dao.SkuEsMapper;
 import com.changgou.search.pojo.SkuInfo;
 import com.changgou.search.service.SkuService;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -72,9 +73,50 @@ public class SkuServiceImpl implements SkuService {
         nativeSearchQueryBuilder.addAggregation(
                 AggregationBuilders.terms("skuSpecGroup").field("spec.keyword").size(100));
 
-        // 设置查询条件
+        // 设置主关键字查询条件
         nativeSearchQueryBuilder.withQuery(QueryBuilders.matchQuery("name", keywords));
         nativeSearchQueryBuilder.withPageable(PageRequest.of(1, 10));
+
+        // 条件筛选
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        if (!StringUtils.isEmpty(searchMap.get("brand"))) {
+            // 如果brand品牌不为空, 就通过品牌进行筛选
+            boolQueryBuilder.filter(QueryBuilders.termQuery("brandName", searchMap.get("brand")));
+        }
+
+        if (!StringUtils.isEmpty(searchMap.get("category"))) {
+            // 如果brand品牌不为空, 就通过品牌进行筛选
+            boolQueryBuilder.filter(QueryBuilders.termQuery("categoryName", searchMap.get("category")));
+        }
+
+        // 规格过滤查询
+        if (searchMap != null) {
+            for (String key : searchMap.keySet()) {
+                if (key.startsWith("spec_")) {
+                    boolQueryBuilder.filter(
+                            QueryBuilders.termQuery("specMap." + key.substring(5) + ".keyword", searchMap.get(key)));
+                }
+            }
+        }
+
+
+        // 价格过滤查询
+        String price = searchMap.get("price");
+        if (!StringUtils.isEmpty(price)) {
+            String[] split = price.split("-");
+            if (!split[1].equalsIgnoreCase("*")) { // 有开始有结束
+                boolQueryBuilder.filter(QueryBuilders.rangeQuery("price").from(split[0], true).to(split[1], true));
+            } else {
+                // 有开始没结束
+                boolQueryBuilder.filter(QueryBuilders.rangeQuery("price").gte(split[0]));
+            }
+        }
+
+
+        // 构建查询过滤器
+        nativeSearchQueryBuilder.withFilter(boolQueryBuilder);
+
+
         // 构建查询对象
         NativeSearchQuery query = nativeSearchQueryBuilder.build();
         // 执行查询
