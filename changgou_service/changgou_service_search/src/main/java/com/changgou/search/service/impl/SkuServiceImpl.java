@@ -6,12 +6,14 @@ import com.changgou.goods.feign.SkuFeign;
 import com.changgou.goods.pojo.Sku;
 import com.changgou.search.dao.SkuEsMapper;
 import com.changgou.search.pojo.SkuInfo;
+import com.changgou.search.service.SearchResultMapperImpl;
 import com.changgou.search.service.SkuService;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +77,14 @@ public class SkuServiceImpl implements SkuService {
         nativeSearchQueryBuilder.addAggregation(
                 AggregationBuilders.terms("skuSpecGroup").field("spec.keyword").size(100));
 
+        // 设置高亮条件
+        nativeSearchQueryBuilder.withHighlightFields(new HighlightBuilder.Field("name"));
+        nativeSearchQueryBuilder.withHighlightBuilder(
+                new HighlightBuilder().preTags("<em style=\"color:red\">").postTags("</em>"));
+
+
         // 设置主关键字查询条件
-        nativeSearchQueryBuilder.withQuery(QueryBuilders.matchQuery("name", keywords));
+        nativeSearchQueryBuilder.withQuery(QueryBuilders.multiMatchQuery(keywords, "name", keywords, "brandName", "categoryName"));
 
 
         // 条件筛选
@@ -143,7 +151,7 @@ public class SkuServiceImpl implements SkuService {
         // 构建查询对象
         NativeSearchQuery query = nativeSearchQueryBuilder.build();
         // 执行查询
-        AggregatedPage<SkuInfo> skuPage = elasticsearchTemplate.queryForPage(query, SkuInfo.class);
+        AggregatedPage<SkuInfo> skuPage = elasticsearchTemplate.queryForPage(query, SkuInfo.class, new SearchResultMapperImpl());
 
         // 获取分组结果
         StringTerms stringTermsCategory = (StringTerms) skuPage.getAggregation("skuCategoryGroup");
