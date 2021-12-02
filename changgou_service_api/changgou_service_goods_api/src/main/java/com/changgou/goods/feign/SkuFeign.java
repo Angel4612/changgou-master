@@ -3,6 +3,7 @@ import com.changgou.entity.Result;
 import com.changgou.goods.pojo.Sku;
 import com.github.pagehelper.PageInfo;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +16,15 @@ import java.util.List;
 @FeignClient(name="goods")
 @RequestMapping("/sku")
 public interface SkuFeign {
+
+    /***
+     * 根据审核状态查询Sku
+     * @param status
+     * @return
+     */
+    @GetMapping("/status/{status}")
+    Result<List<Sku>> findByStatus(@PathVariable(name = "status") String status);
+
 
     /***
      * Sku分页条件搜索实现
