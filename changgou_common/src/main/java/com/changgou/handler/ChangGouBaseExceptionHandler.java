@@ -14,7 +14,7 @@ public class ChangGouBaseExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result ExceptionHandler(HttpServletRequest request, ChangGouException e) {
+    public Result ExceptionHandler(HttpServletRequest request, Exception e) {
         e.printStackTrace();
         return new Result(false, StatusCode.ERROR, "出错了!");
     }

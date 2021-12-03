@@ -60,7 +60,7 @@ public class SkuServiceImpl implements SkuService {
         String keywords = searchMap.get("keywords");
         // 如果为空, 赋值一个默认值
         if (StringUtils.isEmpty(keywords)) {
-            keywords = "";
+            keywords = "华为";
         }
         // 创建查询对象
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
@@ -84,7 +84,7 @@ public class SkuServiceImpl implements SkuService {
 
 
         // 设置主关键字查询条件
-        nativeSearchQueryBuilder.withQuery(QueryBuilders.multiMatchQuery(keywords, "name", keywords, "brandName", "categoryName"));
+        nativeSearchQueryBuilder.withQuery(QueryBuilders.multiMatchQuery(keywords, "name", "brandName", "categoryName"));
 
 
         // 条件筛选
@@ -136,7 +136,7 @@ public class SkuServiceImpl implements SkuService {
                 pageNum = 1;
             }
         }
-        Integer pageSize = 5; // 每页显示条目数量, 固定
+        Integer pageSize = 30; // 每页显示条目数量, 固定
         nativeSearchQueryBuilder.withPageable(PageRequest.of(pageNum - 1, pageSize));
 
 
@@ -177,6 +177,11 @@ public class SkuServiceImpl implements SkuService {
         resultMap.put("categoryList", categoryList);
         resultMap.put("brandList", brandList);
         resultMap.put("SpecList", SpecList);
+
+        // 分页信息
+        resultMap.put("pageNum", pageNum);
+        resultMap.put("pageSize", pageSize);
+
         return resultMap;
     }
 

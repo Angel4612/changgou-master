@@ -22,6 +22,8 @@ feign:
 #超时配置
 ribbon:
   ReadTimeout: 300000
+  eureka:
+    enabled: true
 
 hystrix:
   command:

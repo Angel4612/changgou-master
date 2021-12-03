@@ -23,8 +23,8 @@ public class SkuController {
     /**
      * 搜索
      */
-    @PostMapping
-    public Map search(@RequestBody(required = false)Map searchMap) {
+    @GetMapping
+    public Map search(@RequestParam(required = false) Map searchMap) {
         return skuService.search(searchMap);
     }
 
