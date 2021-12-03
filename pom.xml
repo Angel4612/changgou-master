@@ -16,7 +16,7 @@
         <module>changgou_eureka</module>
         <module>changgou_common</module>
         <module>changgou_common_db</module>
-        <module>changgou_service_user</module>
+        <module>changgou_user_oauth</module>
     </modules>
 
     <properties>
