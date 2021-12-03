@@ -5,6 +5,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.changgou.content.feign.ContentFeign;
 import com.changgou.content.pojo.Content;
 import com.changgou.entity.Result;
+import com.changgou.item.feign.PageFeign;
 import com.xpand.starter.canal.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -18,6 +19,8 @@ public class CanalDataEventListener {
     private ContentFeign contentFeign;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private PageFeign pageFeign;
 
     /***
      * 增加数据监听
@@ -100,4 +103,47 @@ public class CanalDataEventListener {
         }
         return categoryId;
     }
+
+
+    /**
+     * 监听当tb_spu中的数据发生变化时, 需要修改生成或者删除静态页
+     */
+    @ListenPoint(
+            destination = "example",
+            schema = "changgou_goods",
+            table = {"tb_spu"},
+            eventType = {
+                    CanalEntry.EventType.UPDATE,
+                    CanalEntry.EventType.INSERT,
+                    CanalEntry.EventType.DELETE
+            }
+    )
+    public void onEventCustomSpu(CanalEntry.EventType eventType, CanalEntry.RowData rowData) {
+        //判断操作类型
+        if (eventType == CanalEntry.EventType.DELETE) {
+            String spuId = "";
+            List<CanalEntry.Column> beforeColumnsList = rowData.getBeforeColumnsList();
+            for (CanalEntry.Column column : beforeColumnsList) {
+                if (column.getName().equals("id")) {
+                    spuId = column.getValue();//spuid
+                    break;
+                }
+            }
+            //todo 删除静态页
+
+        }else{
+            //新增 或者 更新
+            List<CanalEntry.Column> afterColumnsList = rowData.getAfterColumnsList();
+            String spuId = "";
+            for (CanalEntry.Column column : afterColumnsList) {
+                if (column.getName().equals("id")) {
+                    spuId = column.getValue();
+                    break;
+                }
+            }
+            //更新 生成静态页
+            pageFeign.createHtml(Long.valueOf(spuId));
+        }
+    }
+
 }

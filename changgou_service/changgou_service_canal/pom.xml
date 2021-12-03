@@ -34,6 +34,13 @@
             <artifactId>changgou_service_content_api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <!--静态页API 服务-->
+        <dependency>
+            <groupId>com.changgou</groupId>
+            <artifactId>changgou_web_item_api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
