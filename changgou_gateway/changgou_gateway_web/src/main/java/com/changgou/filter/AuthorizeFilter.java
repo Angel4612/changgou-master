@@ -49,7 +49,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         //如果头文件中没有，则从请求参数中获取
         if (StringUtils.isEmpty(tokent)) {
             tokent = request.getQueryParams().getFirst(AUTHORIZE_TOKEN);
-            hasToken = false;
+            hasToken = false; // 头文件中没有Authorization
         }
 
         // 如果头文件和请求参数中都没有, 就去Cookie中获取
@@ -68,17 +68,20 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         }
 
         //解析令牌数据
-        try {
+/*        try {
             Claims claims = JwtUtil.parseJWT(tokent);
         } catch (Exception e) {
             e.printStackTrace();
             //解析失败，响应401错误
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
-        }
+        }*/
 
-        // 将令牌封装到头文件中
-        request.mutate().header(AUTHORIZE_TOKEN, "Bearer " + tokent);
+        // 如果头文件中没有Authorization的token, 并且从Cookie或者请求参数中获取的token不是以bearer开头
+        if (!hasToken && !tokent.startsWith("bearer") && !tokent.startsWith("Bearer")) {
+            // 将令牌封装到头文件中
+            request.mutate().header(AUTHORIZE_TOKEN, "Bearer " + tokent);
+        }
 
         //放行
         return chain.filter(exchange);
