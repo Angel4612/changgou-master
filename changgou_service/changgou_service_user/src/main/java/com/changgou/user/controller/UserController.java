@@ -9,6 +9,7 @@ import com.changgou.utils.JwtUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -174,6 +175,7 @@ public class UserController {
      * 查询User全部数据
      * @return
      */
+    @PreAuthorize("hasAuthority('admin')")  // 表示只有admin角色才能访问该方法, 其他角色无权访问
     @ApiOperation(value = "查询所有User",notes = "查询所User有方法详情",tags = {"UserController"})
     @GetMapping
     public Result<List<User>> findAll(){

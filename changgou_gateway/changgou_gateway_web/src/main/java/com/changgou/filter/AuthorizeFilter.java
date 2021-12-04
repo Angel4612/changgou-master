@@ -78,7 +78,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         }
 
         // 将令牌封装到头文件中
-        request.mutate().header(AUTHORIZE_TOKEN, tokent);
+        request.mutate().header(AUTHORIZE_TOKEN, "Bearer " + tokent);
 
         //放行
         return chain.filter(exchange);
