@@ -44,7 +44,7 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
-    @PostMapping("/login")
+    @PostMapping({"/login"})
     public Result login(String username, String password) {
         if(StringUtils.isEmpty(username)){
             throw new RuntimeException("用户名不允许为空");
