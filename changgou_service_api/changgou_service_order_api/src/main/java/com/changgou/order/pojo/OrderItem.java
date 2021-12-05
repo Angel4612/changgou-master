@@ -1,4 +1,6 @@
 package com.changgou.order.pojo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
@@ -36,7 +38,9 @@ public class OrderItem implements Serializable{
     @Column(name = "spu_id")
 	private Long spuId;//SPU_ID
 
+
 	@ApiModelProperty(value = "SKU_ID",required = false)
+	@JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "sku_id")
 	private Long skuId;//SKU_ID
 

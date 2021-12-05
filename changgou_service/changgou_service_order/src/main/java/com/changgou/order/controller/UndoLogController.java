@@ -37,7 +37,7 @@ public class UndoLogController {
             @ApiImplicitParam(paramType = "path", name = "page", value = "当前页", required = true, dataType = "Integer"),
             @ApiImplicitParam(paramType = "path", name = "size", value = "每页显示条数", required = true, dataType = "Integer")
     })
-    @PostMapping(value = "/search/{page}/{size}" )
+    @PostMapping(value = "/searchByCondition/{page}/{size}" )
     public Result<PageInfo> findPage(@RequestBody(required = false) @ApiParam(name = "UndoLog对象",value = "传入JSON数据",required = false) UndoLog undoLog, @PathVariable  int page, @PathVariable  int size){
         //调用UndoLogService实现分页条件查询UndoLog
         PageInfo<UndoLog> pageInfo = undoLogService.findPage(undoLog, page, size);
